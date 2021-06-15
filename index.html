@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Babylon Template</title>
+
+    <style>
+      html,
+      body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+    </style>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+  </head>
+
+  <body>
+    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <!-- touch-action="none" for best results from PEP -->
+
+    <script>
+      const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+      const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+      // Add your code here matching the playground format
+
+      var createScene = function () {
+        // This creates a basic Babylon Scene object (non-mesh)
+        var scene = new BABYLON.Scene(engine);
+
+        // This creates and positions a free camera (non-mesh)
+        // var camera = new BABYLON.FreeCamera(
+        //   "camera1",
+        //   new BABYLON.Vector3(-30, 15, -10),
+        //   scene
+        // );
+        var camera = new BABYLON.ArcRotateCamera(
+          "Camera",
+          0,
+          2,
+          -30,
+          new BABYLON.Vector3(0, 0, 0),
+          scene
+        );
+        camera.useBouncingBehavior = true;
+
+        // This targets the camera to scene origin
+        camera.setTarget(BABYLON.Vector3.Zero());
+
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
+        // camera.useFramingBehavior = true;
+
+        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+        var light = new BABYLON.HemisphericLight(
+          "light",
+          new BABYLON.Vector3(0, 1, 0),
+          scene
+        );
+
+        // Default intensity is 1. Let's dim the light a small amount
+        light.intensity = 0.7;
+
+        // Our built-in 'sphere' shape.
+        var sphere = BABYLON.MeshBuilder.CreateSphere(
+          "sphere",
+          { diameter: 3, segments: 32 },
+          scene
+        );
+        var sphere2 = BABYLON.MeshBuilder.CreateSphere(
+          "sphere",
+          { diameter: 2, segments: 32 },
+          scene
+        );
+        var sphere3 = BABYLON.MeshBuilder.CreateSphere(
+          "sphere",
+          { diameter: 2, segments: 32 },
+          scene
+        );
+        var sphere4 = BABYLON.MeshBuilder.CreateSphere(
+          "sphere",
+          { diameter: 2, segments: 32 },
+          scene
+        );
+        // var sphere5 = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+
+        // function setCoords(object, x,y,z) {
+        //     object?.position?.x = x || 0;
+        //     object?.position?.y = y || 0;
+        //     object?.position?.z = z || 0;
+        // }
+
+        // Move the sphere upward 1/2 its height
+        sphere.position.y = 1;
+        sphere2.position.x = 1;
+        sphere2.position.y = 3;
+        sphere2.position.z = 4;
+        sphere3.position.x = 2;
+        sphere3.position.y = 4;
+        sphere3.position.z = -1;
+        sphere4.position.x = -3;
+        sphere4.position.y = -1;
+        sphere4.position.z = 0;
+        sphere.isPickable = true;
+
+        // Our built-in 'ground' shape.
+        // var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
+
+        var animationOrbit = new BABYLON.Animation(
+          "tutoAnimation",
+          "position",
+          3,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+        var animationOrbit2 = new BABYLON.Animation(
+          "tutoAnimation",
+          "position",
+          3,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+        );
+
+        // Animation keys
+        var keys1 = [];
+        var keys2 = [];
+        var keys3 = [];
+
+        var numberOfKeyframes = 512;
+        alpha = 0;
+        beta = 0.5;
+
+        for (var i = 0; i < numberOfKeyframes; i++) {
+          var x = 10 * Math.cos(alpha);
+          var y = 5;
+          var z = 10 * Math.sin(alpha);
+
+          keys1.push({
+            frame: i,
+            value: new BABYLON.Vector3(x, y, z),
+          });
+
+          alpha += 0.03;
+        }
+        for (var i = 0; i < numberOfKeyframes; i++) {
+          var x = 12 * Math.cos(beta);
+          var y = 2;
+          var z = 12 * Math.sin(beta);
+
+          keys2.push({
+            frame: i,
+            value: new BABYLON.Vector3(x, y, z),
+          });
+
+          beta += 0.06;
+        }
+
+        //Adding keys to the animation object
+        animationOrbit.setKeys(keys1);
+        animationOrbit2.setKeys(keys2);
+        //Then add the animation object to box1
+        sphere.animations.push(animationOrbit);
+        sphere2.animations.push(animationOrbit2);
+        //Finally, launch animations on box1, from key 0 to key 100 with loop activated
+        scene.beginAnimation(sphere, 0, 512, true);
+        scene.beginAnimation(sphere2, 0, 512, true);
+        console.log("scene", scene);
+        // scene.onPointerDown((_, picked) => {
+        //     if(picked.hit) alert('Hello world')
+        // })
+
+        sphere.actionManager = new BABYLON.ActionManager(scene);
+        sphere.actionManager.registerAction(
+          new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPickTrigger,
+            () => console.log("planet 1 clicked")
+          )
+        );
+        sphere2.actionManager = new BABYLON.ActionManager(scene);
+        sphere2.actionManager.registerAction(
+          new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPickTrigger,
+            () => console.log("planet 2 clicked")
+          )
+        );
+        scene.ambientColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+
+        var projectionMatrix = scene.activeCamera.getProjectionMatrix();
+        var r = projectionMatrix.getRow(3);
+        var t = 0;
+        scene.registerBeforeRender(function () {
+          r.x += Math.cos(t) * 0.01;
+          r.y += Math.sin(t) * 0.005;
+          projectionMatrix.setRowFromFloats(3, r.x, r.y, r.z, r.w);
+          t += 0.01;
+        });
+
+        return scene;
+      };
+      const scene = createScene(); //Call the createScene function
+
+      // Register a render loop to repeatedly render the scene
+      engine.runRenderLoop(function () {
+        scene.render();
+      });
+
+      var skybox = BABYLON.Mesh.CreateBox("skyBox", 80.0, scene);
+      var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.disableLighting = true;
+      skybox.material = skyboxMaterial;
+      skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture(
+        "textures/skybox",
+        scene
+      );
+      skyboxMaterial.reflectionTexture.coordinatesMode =
+        BABYLON.Texture.SKYBOX_MODE;
+
+      //   var hdrTexture = new BABYLON.HDRCubeTexture("sapaced.hdr", scene, 1024);
+      //   var hdrSkybox = BABYLON.Mesh.CreateBox("hdrSkyBox", 100.0, scene);
+      //   var hdrSkyboxMaterial = new BABYLON.PBRMaterial("skyBox", scene);
+      //   hdrSkyboxMaterial.backFaceCulling = false;
+      //   hdrSkyboxMaterial.reflectionTexture = hdrTexture.clone();
+      //   hdrSkyboxMaterial.reflectionTexture.coordinatesMode =
+      //     BABYLON.Texture.SKYBOX_MODE;
+      //   hdrSkyboxMaterial.microSurface = 1.1;
+      //   hdrSkyboxMaterial.cameraExposure = 0.8;
+      //   hdrSkyboxMaterial.cameraContrast = 1.6;
+      //   hdrSkyboxMaterial.disableLighting = true;
+      //   hdrSkybox.material = hdrSkyboxMaterial;
+      //   hdrSkybox.infiniteDistance = true;
+
+      // Watch for browser/canvas resize events
+      window.addEventListener("resize", function () {
+        engine.resize();
+      });
+    </script>
+  </body>
+</html>
