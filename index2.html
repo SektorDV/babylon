@@ -90,6 +90,7 @@
           new BABYLON.Vector3(0, 1, 0),
           scene
         );
+        light.intensity = 1.5;
         light2.intensity = 0.3;
 
         // Default intensity is 1. Let's dim the light a small amount
@@ -148,7 +149,7 @@
         sphere3.material = new BABYLON.StandardMaterial("earth", scene);
         sphere3.material.diffuseTexture = new BABYLON.Texture("earth.jpg");
         sphere4.material = new BABYLON.StandardMaterial("sun", scene);
-        sphere4.material.emissiveColor = new BABYLON.Color3(255, 255, 255);
+        sphere4.material.emissiveColor = new BABYLON.Color3(3.773, 0.93, 0.266);
 
         sphere.material.specularColor = new BABYLON.Color3(0, 0, 0);
         sphere2.material.specularColor = new BABYLON.Color3(0, 0, 0);
