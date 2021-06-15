@@ -191,6 +191,8 @@
 
         // camera zoom to mesh
 
+        var planetSelected = false;
+
         function zoom(mesh) {
           var itEnded = function () {
             freelook = true;
@@ -225,7 +227,7 @@
 
           camera.animations = [];
           camera.animations.push(animationcamera);
-
+          planetSelected = true;
           freelook = false;
           scene.beginAnimation(camera, 0, 100, false, 1, itEnded);
         }
@@ -270,6 +272,8 @@
           camera.animations.push(animationcamera);
 
           freelook = false;
+          planetSelected = false;
+
           scene.beginAnimation(camera, 0, 100, false, 1, itEnded);
           camera.lockedTarget = mesh;
         }
@@ -377,11 +381,16 @@
           sphere3.rotation.y += 0.003;
 
           sphere4.rotation.y += 0.003;
-
-          r.x += Math.cos(t) * 0.01;
-          r.y += Math.sin(t) * 0.005;
-          projectionMatrix.setRowFromFloats(3, r.x, r.y, r.z, r.w);
-          t += 0.01;
+          if (!planetSelected) {
+            r.x += Math.cos(t) * 0.01;
+            r.y += Math.sin(t) * 0.005;
+            projectionMatrix.setRowFromFloats(3, r.x, r.y, r.z, r.w);
+            t += 0.01;
+          } else {
+            r.x = 0;
+            r.y = 0;
+            t = 0;
+          }
         });
         return scene;
       };
